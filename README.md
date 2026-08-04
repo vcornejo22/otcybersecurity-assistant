@@ -1,0 +1,84 @@
+# 🛡️ IEC 62443 Assistant
+
+Asistente conversacional RAG para el estándar IEC 62443 de ciberseguridad industrial. Consultá la norma en lenguaje natural con respuestas fundamentadas y citas a las fuentes.
+
+## 🚀 Quick Start
+
+```bash
+# 1. Clonar y configurar
+cp .env.example .env
+# Editar .env con tu LLM_API_KEY de Nan Builders
+
+# 2. Levantar servicios
+make up
+
+# 3. Ingerir documentos IEC 62443
+make ingest
+
+# 4. Probar
+curl -X POST http://localhost:8000/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"question":"¿Qué es un security level en IEC 62443?"}'
+```
+
+Frontend: http://localhost:8501  
+API docs: http://localhost:8000/docs
+
+## 📋 Makefile
+
+| Comando | Descripción |
+|---------|-------------|
+| `make build` | Instalar dependencias con uv |
+| `make run` | API local con hot-reload |
+| `make test` | Ejecutar tests |
+| `make lint` | Ruff check |
+| `make format` | Ruff format |
+| `make up` | Docker Compose (api + chroma + frontend) |
+| `make down` | Detener servicios |
+| `make rebuild` | Reconstruir imágenes sin caché |
+| `make logs` | Logs del API en Docker |
+| `make ingest` | Ingerir PDFs a ChromaDB |
+| `make clean` | Limpiar cachés y venv |
+
+## 🏗️ Arquitectura
+
+```
+Usuario → Streamlit (8501) → FastAPI (8000) → ChromaDB (8001) → Nan Builders API
+                                    ↓
+                              RAG Pipeline
+                         (ingest → retrieve → generate)
+```
+
+- **FastAPI**: API REST con endpoints `/api/health` y `/api/query`
+- **ChromaDB**: Vector store HTTP (chromadb/chroma)
+- **Streamlit**: Frontend de chat
+- **Nan Builders API**: Embeddings (`qwen3-embedding`, 4096 dims) + LLM (`qwen3.7-max`)
+- **LangChain**: Orquestación del retrieval (MMR + MultiQuery + Ensemble)
+
+## ⚙️ Configuración
+
+Copiar `.env.example` a `.env`:
+
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `LLM_API_KEY` | API key de Nan Builders | — |
+| `LLM_BASE_URL` | URL base de Nan Builders | `https://api.nan.builders/v1` |
+| `LLM_MODEL` | Modelo de generación | `qwen3.7-max` |
+| `LLM_MODEL_EMBEDDING` | Modelo de embeddings | `qwen3-embedding` |
+| `CHROMA_HOST` | Host de ChromaDB | `localhost` |
+| `CHROMA_PORT` | Puerto de ChromaDB | `8001` |
+| `CHROMA_COLLECTION` | Colección en ChromaDB | `iec62443_docs` |
+
+## 🧪 Tests
+
+```bash
+make test          # pytest
+make lint          # ruff check
+make format        # ruff format
+```
+
+CI/CD con GitHub Actions: lint → test → build en cada push a `main`.
+
+## 📄 Licencia
+
+MIT
