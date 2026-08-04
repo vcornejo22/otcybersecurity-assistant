@@ -1,4 +1,4 @@
-.PHONY: build run test lint format clean build-image up down rebuild ingest logs
+.PHONY: build run test lint format clean build-image up down rebuild reset ingest logs
 
 # ── Local development ────────────────────────────────────────────
 build:
@@ -31,6 +31,9 @@ down:
 
 rebuild:
 	docker compose down && docker compose build --no-cache && docker compose up -d
+
+reset:
+	docker compose down -v && docker compose build --no-cache && docker compose up -d
 
 logs:
 	docker compose logs -f api
