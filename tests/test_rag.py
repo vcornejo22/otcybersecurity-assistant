@@ -50,8 +50,8 @@ class TestNanBuildingsEmbeddings:
 class TestBuildRetriever:
     """Tests for the retrieval factory."""
 
-    def test_build_retriever_returns_configured_retriever(self, test_settings, monkeypatch):
-        """build_retriever returns a retriever instance."""
+    def test_build_retriever_skips_multi_query_by_default(self, test_settings, monkeypatch):
+        """Multi-query is off by default, so no LLM query-expansion call is made."""
         monkeypatch.setattr(
             "app.rag.retrieval._get_chroma_client",
             lambda settings: MagicMock(),
@@ -62,9 +62,10 @@ class TestBuildRetriever:
                 as_retriever=lambda **kwargs: MagicMock(spec="Retriever")
             ),
         )
+        from_llm = MagicMock(return_value=MagicMock(spec="Retriever"))
         monkeypatch.setattr(
             "app.rag.retrieval.MultiQueryRetriever.from_llm",
-            lambda *args, **kwargs: MagicMock(spec="Retriever"),
+            from_llm,
         )
         monkeypatch.setattr(
             "app.rag.retrieval.EnsembleRetriever",
@@ -72,7 +73,37 @@ class TestBuildRetriever:
         )
 
         retriever = build_retriever(test_settings)
+
         assert retriever is not None
+        from_llm.assert_not_called()
+
+    def test_build_retriever_with_multi_query_enabled(self, test_settings, monkeypatch):
+        """build_retriever wraps MMR with MultiQueryRetriever when ENABLE_MULTI_QUERY is on."""
+        test_settings.ENABLE_MULTI_QUERY = True
+        monkeypatch.setattr(
+            "app.rag.retrieval._get_chroma_client",
+            lambda settings: MagicMock(),
+        )
+        monkeypatch.setattr(
+            "app.rag.retrieval.Chroma",
+            lambda *args, **kwargs: MagicMock(
+                as_retriever=lambda **kwargs: MagicMock(spec="Retriever")
+            ),
+        )
+        from_llm = MagicMock(return_value=MagicMock(spec="Retriever"))
+        monkeypatch.setattr(
+            "app.rag.retrieval.MultiQueryRetriever.from_llm",
+            from_llm,
+        )
+        monkeypatch.setattr(
+            "app.rag.retrieval.EnsembleRetriever",
+            lambda *args, **kwargs: MagicMock(spec="Retriever"),
+        )
+
+        retriever = build_retriever(test_settings)
+
+        assert retriever is not None
+        from_llm.assert_called_once()
 
 
 class TestGenerateAnswer:

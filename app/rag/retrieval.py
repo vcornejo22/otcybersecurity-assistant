@@ -43,7 +43,9 @@ def build_retriever(settings: Settings | None = None):
     """Build the configured retrieval pipeline.
 
     The pipeline consists of:
-      - MMR retriever with query expansion via MultiQueryRetriever.
+      - MMR retriever, optionally wrapped with MultiQueryRetriever for
+        LLM-based query expansion when ``ENABLE_MULTI_QUERY`` is enabled
+        (disabled by default to avoid an extra remote LLM call).
       - Optional EnsembleRetriever combining MMR and similarity search.
     """
     settings = settings or Settings()
@@ -58,15 +60,17 @@ def build_retriever(settings: Settings | None = None):
         },
     )
 
-    llm = NanBuildersChatModel(settings=settings, temperature=0.0)
-    multi_query_retriever = MultiQueryRetriever.from_llm(
-        retriever=mmr_retriever,
-        llm=llm,
-        prompt=MULTI_QUERY_TEMPLATE,
-    )
+    base_retriever = mmr_retriever
+    if settings.ENABLE_MULTI_QUERY:
+        llm = NanBuildersChatModel(settings=settings, temperature=0.0, max_tokens=200)
+        base_retriever = MultiQueryRetriever.from_llm(
+            retriever=mmr_retriever,
+            llm=llm,
+            prompt=MULTI_QUERY_TEMPLATE,
+        )
 
     if not settings.ENABLE_HYBRID_SEARCH:
-        return multi_query_retriever
+        return base_retriever
 
     similarity_retriever = vectorstore.as_retriever(
         search_type="similarity_score_threshold",
@@ -77,6 +81,6 @@ def build_retriever(settings: Settings | None = None):
     )
 
     return EnsembleRetriever(
-        retrievers=[multi_query_retriever, similarity_retriever],
+        retrievers=[base_retriever, similarity_retriever],
         weights=[0.7, 0.3],
     )

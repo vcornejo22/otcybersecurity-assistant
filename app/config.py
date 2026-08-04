@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     # Model configuration
     LLM_MODEL: str = os.getenv("LLM_MODEL", "qwen3.7-max")
     LLM_MODEL_EMBEDDING: str = os.getenv("LLM_MODEL_EMBEDDING", "qwen3-embedding")
+    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "1024"))
 
     # ChromaDB configuration (HTTP server mode)
     CHROMA_HOST: str = os.getenv("CHROMA_HOST", "localhost")
@@ -47,6 +48,7 @@ class Settings(BaseSettings):
     MMR_FETCH_K: int = 20
     MMR_LAMBDA_MULT: float = 0.7
     ENABLE_HYBRID_SEARCH: bool = True
+    ENABLE_MULTI_QUERY: bool = os.getenv("ENABLE_MULTI_QUERY", "false").lower() == "true"
     SIMILARITY_THRESHOLD: float = 0.70
     RETRIEVER_SEARCH_TYPE: str = "mmr"
 

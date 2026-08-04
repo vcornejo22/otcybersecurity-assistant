@@ -29,6 +29,7 @@ class NanBuildersChatModel(BaseChatModel):
     settings: Settings | None = None
     model: str | None = None
     temperature: float = 0.3
+    max_tokens: int | None = None
     timeout: float = 60.0
 
     def __init__(self, settings: Settings | None = None, **kwargs: Any) -> None:
@@ -40,6 +41,8 @@ class NanBuildersChatModel(BaseChatModel):
             )
         if self.model is None:
             self.model = self.settings.LLM_MODEL
+        if self.max_tokens is None:
+            self.max_tokens = self.settings.LLM_MAX_TOKENS
         self._client = httpx.Client(
             base_url=self.settings.LLM_BASE_URL,
             timeout=self.timeout,
@@ -58,6 +61,7 @@ class NanBuildersChatModel(BaseChatModel):
         return {
             "model": self.model,
             "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
             "base_url": self.settings.LLM_BASE_URL,
         }
 
@@ -74,6 +78,8 @@ class NanBuildersChatModel(BaseChatModel):
             "messages": api_messages,
             "temperature": self.temperature,
         }
+        if self.max_tokens is not None:
+            payload["max_tokens"] = self.max_tokens
         if stop:
             payload["stop"] = stop
 

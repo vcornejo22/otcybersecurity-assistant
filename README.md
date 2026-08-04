@@ -53,7 +53,7 @@ Usuario → Streamlit (8501) → FastAPI (8000) → ChromaDB (8001) → Nan Buil
 - **ChromaDB**: Vector store HTTP (chromadb/chroma)
 - **Streamlit**: Frontend de chat
 - **Nan Builders API**: Embeddings (`qwen3-embedding`, 4096 dims) + LLM (`qwen3.7-max`)
-- **LangChain**: Orquestación del retrieval (MMR + MultiQuery + Ensemble)
+- **LangChain**: Orquestación del retrieval (MMR + Ensemble; MultiQuery opcional vía `ENABLE_MULTI_QUERY`)
 
 ## ⚙️ Configuración
 
@@ -65,6 +65,8 @@ Copiar `.env.example` a `.env`:
 | `LLM_BASE_URL` | URL base de Nan Builders | `https://api.nan.builders/v1` |
 | `LLM_MODEL` | Modelo de generación | `qwen3.7-max` |
 | `LLM_MODEL_EMBEDDING` | Modelo de embeddings | `qwen3-embedding` |
+| `LLM_MAX_TOKENS` | Tope de tokens de la respuesta | `1024` |
+| `ENABLE_MULTI_QUERY` | Expansión de query con LLM (agrega 1 llamada extra) | `false` |
 | `CHROMA_HOST` | Host de ChromaDB | `localhost` |
 | `CHROMA_PORT` | Puerto de ChromaDB | `8001` |
 | `CHROMA_COLLECTION` | Colección en ChromaDB | `iec62443_docs` |
