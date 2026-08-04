@@ -59,11 +59,7 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         """Return CORS origins as a list from the comma-separated string."""
-        return [
-            origin.strip()
-            for origin in self.APP_CORS_ORIGINS.split(",")
-            if origin.strip()
-        ]
+        return [origin.strip() for origin in self.APP_CORS_ORIGINS.split(",") if origin.strip()]
 
 
 # Singleton instance for dependency injection.
