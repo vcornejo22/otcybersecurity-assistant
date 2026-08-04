@@ -1,9 +1,9 @@
 [project]
 name = "otcybersecurity-assistant"
 version = "0.1.0"
-description = "RAG conversational assistant for IEC 62443"
+description = "RAG conversational assistant for OT/ICS cybersecurity (IEC 62443)"
 requires-python = ">=3.14"
-authors = [{ name = "IEC62443 Assistant Team" }]
+authors = [{ name = "OT Cybersecurity Assistant Team" }]
 readme = "README.md"
 license = { text = "MIT" }
 
