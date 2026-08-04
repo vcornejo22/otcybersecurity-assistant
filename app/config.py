@@ -14,15 +14,17 @@ class Settings(BaseSettings):
     """Runtime settings loaded from environment variables and .env file."""
 
     # Application metadata
-    APP_NAME: str = os.getenv("APP_NAME")
-    APP_VERSION: str = os.getenv("APP_VERSION")
-    APP_HOST: str = os.getenv("APP_HOST")
-    APP_PORT: int = int(os.getenv("APP_PORT"))
-    APP_CORS_ORIGINS: str = os.getenv("APP_CORS_ORIGINS")
+    APP_NAME: str = os.getenv("APP_NAME", "otcybersecurity-assistant")
+    APP_VERSION: str = os.getenv("APP_VERSION", "0.1.0")
+    APP_HOST: str = os.getenv("APP_HOST", "0.0.0.0")
+    APP_PORT: int = int(os.getenv("APP_PORT", "8000"))
+    APP_CORS_ORIGINS: str = os.getenv(
+        "APP_CORS_ORIGINS", "http://localhost:3000,http://localhost:8000"
+    )
 
     # Nan Builders API
-    LLM_API_KEY: str = os.getenv("LLM_API_KEY")
-    LLM_BASE_URL: str = os.getenv("LLM_BASE_URL")
+    LLM_API_KEY: str = os.getenv("LLM_API_KEY", "")
+    LLM_BASE_URL: str = os.getenv("LLM_BASE_URL", "")
 
     # Security
     JWT_SECRET: str = os.getenv("JWT_SECRET", "change-me-in-production")
@@ -30,18 +32,18 @@ class Settings(BaseSettings):
     RATE_LIMIT: str = os.getenv("RATE_LIMIT", "30/minute")
 
     # Model configuration
-    LLM_MODEL: str = os.getenv("LLM_MODEL")
-    LLM_MODEL_EMBEDDING: str = os.getenv("LLM_MODEL_EMBEDDING")
+    LLM_MODEL: str = os.getenv("LLM_MODEL", "qwen3.7-max")
+    LLM_MODEL_EMBEDDING: str = os.getenv("LLM_MODEL_EMBEDDING", "qwen3-embedding")
 
     # ChromaDB configuration (HTTP server mode)
-    CHROMA_HOST: str = os.getenv("CHROMA_HOST")
-    CHROMA_PORT: int = int(os.getenv("CHROMA_PORT"))
-    CHROMA_COLLECTION: str = os.getenv("CHROMA_COLLECTION")
+    CHROMA_HOST: str = os.getenv("CHROMA_HOST", "localhost")
+    CHROMA_PORT: int = int(os.getenv("CHROMA_PORT", "8001"))
+    CHROMA_COLLECTION: str = os.getenv("CHROMA_COLLECTION", "iec62443_docs")
 
     # Retrieval configuration
     TOP_K_DEFAULT: int = 3
-    CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE"))
-    CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP"))
+    CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "512"))
+    CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "64"))
     MMR_FETCH_K: int = 20
     MMR_LAMBDA_MULT: float = 0.7
     ENABLE_HYBRID_SEARCH: bool = True
@@ -57,7 +59,11 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         """Return CORS origins as a list from the comma-separated string."""
-        return [origin.strip() for origin in self.APP_CORS_ORIGINS.split(",") if origin.strip()]
+        return [
+            origin.strip()
+            for origin in self.APP_CORS_ORIGINS.split(",")
+            if origin.strip()
+        ]
 
 
 # Singleton instance for dependency injection.
