@@ -2,6 +2,7 @@
 
 from unittest.mock import Mock, patch
 
+from app.config import get_settings
 from app.rag.exceptions import LLMUnavailableError
 from app.rag.generator import GenerationResult
 
@@ -126,6 +127,21 @@ class TestQueryEndpoint:
         """A query without Authorization header returns 401."""
         response = test_client.post("/api/query", json={"question": "What is IEC 62443?"})
         assert response.status_code == 401
+
+
+class TestLoginEndpoint:
+    """Tests for POST /api/auth/login."""
+
+    def test_login_is_rate_limited(self, test_client):
+        """Exceeding RATE_LIMIT on login returns 429 (Too Many Requests)."""
+        limit = int(get_settings().RATE_LIMIT.split("/")[0])
+        response = None
+        for _ in range(limit + 1):
+            response = test_client.post(
+                "/api/auth/login", json={"user": "t", "password": "wrong-key"}
+            )
+        assert response is not None
+        assert response.status_code == 429
 
 
 class TestHealthEndpoint:

@@ -2,7 +2,7 @@
 
 import time
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from app.api.deps import verify_credentials
@@ -10,6 +10,7 @@ from app.api.schemas import QueryRequest, QueryResponse, Source
 from app.config import Settings, get_settings
 from app.core.auth import create_jwt, verify_api_key
 from app.core.metrics import LLM_TOKENS, QUERY_COUNT, QUERY_LATENCY
+from app.core.rate_limit import limiter
 from app.rag.exceptions import LLMUnavailableError
 from app.rag.generator import generate_answer
 from app.rag.retrieval import build_retriever
@@ -28,20 +29,24 @@ class LoginResponse(BaseModel):
 
 
 @router.post("/api/auth/login", response_model=LoginResponse)
+@limiter.limit(lambda: get_settings().RATE_LIMIT)
 async def login(
-    request: LoginRequest,
+    request: Request,
+    body: LoginRequest,
     settings: Settings = Depends(get_settings),
 ) -> LoginResponse:
     """Authenticate and return a JWT token."""
-    if not verify_api_key(request.password, settings):
+    if not verify_api_key(body.password, settings):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
-    token = create_jwt(request.user, settings=settings)
+    token = create_jwt(body.user, settings=settings)
     return LoginResponse(access_token=token)
 
 
 @router.post("/api/query", response_model=QueryResponse)
+@limiter.limit(lambda: get_settings().RATE_LIMIT)
 async def query(
-    request: QueryRequest,
+    request: Request,
+    body: QueryRequest,
     settings: Settings = Depends(get_settings),
     user: str = Depends(verify_credentials),
 ) -> QueryResponse:
@@ -50,10 +55,10 @@ async def query(
     try:
         retriever = build_retriever(settings)
         result = generate_answer(
-            request.question,
+            body.question,
             retriever,
             settings,
-            temperature=request.temperature,
+            temperature=body.temperature,
         )
     except LLMUnavailableError:
         QUERY_COUNT.labels(status="503").inc()
