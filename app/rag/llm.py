@@ -30,6 +30,7 @@ class NanBuildersChatModel(BaseChatModel):
     model: str | None = None
     temperature: float = 0.3
     max_tokens: int | None = None
+    enable_thinking: bool | None = None
     timeout: float = 60.0
 
     def __init__(self, settings: Settings | None = None, **kwargs: Any) -> None:
@@ -43,6 +44,8 @@ class NanBuildersChatModel(BaseChatModel):
             self.model = self.settings.LLM_MODEL
         if self.max_tokens is None:
             self.max_tokens = self.settings.LLM_MAX_TOKENS
+        if self.enable_thinking is None:
+            self.enable_thinking = self.settings.LLM_ENABLE_THINKING
         self._client = httpx.Client(
             base_url=self.settings.LLM_BASE_URL,
             timeout=self.timeout,
@@ -62,6 +65,7 @@ class NanBuildersChatModel(BaseChatModel):
             "model": self.model,
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
+            "enable_thinking": self.enable_thinking,
             "base_url": self.settings.LLM_BASE_URL,
         }
 
@@ -80,6 +84,8 @@ class NanBuildersChatModel(BaseChatModel):
         }
         if self.max_tokens is not None:
             payload["max_tokens"] = self.max_tokens
+        if self.enable_thinking is not None:
+            payload["enable_thinking"] = self.enable_thinking
         if stop:
             payload["stop"] = stop
 
@@ -116,6 +122,15 @@ class NanBuildersChatModel(BaseChatModel):
                     raise LLMUnavailableError(
                         "El modelo devolvió tool_calls en vez de contenido de texto. "
                         "Posiblemente el modelo no está configurado para chat directo."
+                    )
+                # Qwen3 con thinking: si solo razonó y cortó por length, content puede venir
+                # vacío mientras reasoning_content sí tiene texto. No es un error del usuario.
+                reasoning = message_data.get("reasoning_content")
+                if reasoning:
+                    raise LLMUnavailableError(
+                        "El modelo devolvió solo razonamiento sin respuesta final. "
+                        f"Desactivá el thinking (LLM_ENABLE_THINKING=false) o subí "
+                        f"LLM_MAX_TOKENS. (finish_reason={finish_reason})"
                     )
                 raise LLMUnavailableError(
                     f"El modelo devolvió contenido vacío (finish_reason={finish_reason}). "

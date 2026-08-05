@@ -67,6 +67,7 @@ Copiar `.env.example` a `.env`:
 | `LLM_MODEL` | Modelo de generación | `qwen3.7-max` |
 | `LLM_MODEL_EMBEDDING` | Modelo de embeddings | `qwen3-embedding` |
 | `LLM_MAX_TOKENS` | Tope de tokens de la respuesta | `1024` |
+| `LLM_ENABLE_THINKING` | Razonamiento Qwen3 (`true` más lento, puede cortar por length) | `false` |
 | `ENABLE_MULTI_QUERY` | Expansión de query con LLM (agrega 1 llamada extra) | `false` |
 | `CHROMA_HOST` | Host de ChromaDB | `localhost` |
 | `CHROMA_PORT` | Puerto de ChromaDB | `8001` |

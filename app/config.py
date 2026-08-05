@@ -35,6 +35,8 @@ class Settings(BaseSettings):
     LLM_MODEL: str = os.getenv("LLM_MODEL", "qwen3.7-max")
     LLM_MODEL_EMBEDDING: str = os.getenv("LLM_MODEL_EMBEDDING", "qwen3-embedding")
     LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "1024"))
+    # Qwen3 reasoning: false = responde directo (más rápido, content nunca vacío)
+    LLM_ENABLE_THINKING: bool = os.getenv("LLM_ENABLE_THINKING", "false").lower() == "true"
 
     # ChromaDB configuration (HTTP server mode)
     CHROMA_HOST: str = os.getenv("CHROMA_HOST", "localhost")
