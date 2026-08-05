@@ -7,7 +7,9 @@ class QueryRequest(BaseModel):
     """Request body for POST /api/query."""
 
     question: str = Field(
-        ..., min_length=5, max_length=500,
+        ...,
+        min_length=5,
+        max_length=500,
         description="User question about industrial cybersecurity",
     )
     top_k: int = Field(

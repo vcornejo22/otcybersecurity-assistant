@@ -88,9 +88,7 @@ def generate_answer(
         else enable_query_translation
     )
     if effective_translation:
-        trans_llm = OpenAICompatibleChatModel(
-            settings=settings, max_tokens=200, temperature=0.0
-        )
+        trans_llm = OpenAICompatibleChatModel(settings=settings, max_tokens=200, temperature=0.0)
         trans_prompt = TRANSLATE_QUERY_TEMPLATE.format(question=question)
         trans_response = trans_llm.invoke(trans_prompt)
         translated = str(trans_response.content).strip()
@@ -128,9 +126,7 @@ def generate_answer(
     except LLMUnavailableError:
         raise
     except Exception as exc:
-        raise LLMUnavailableError(
-            f"Unexpected error while calling the LLM: {exc}"
-        ) from exc
+        raise LLMUnavailableError(f"Unexpected error while calling the LLM: {exc}") from exc
     latency_ms = (time.perf_counter() - start) * 1000
 
     answer = str(response.content)

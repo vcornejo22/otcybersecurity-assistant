@@ -49,7 +49,7 @@ TRANSLATE_QUERY_PROMPT = (
     "used to search the vector database.\n"
     "Keep technical terms, acronyms, and proper names unchanged (e.g.\n"
     "IEC 62443, NIST SP 800-82, OT, ICS, IACS, SCADA, PLC, DCS, SL, zone, conduit).\n"
-    'Output ONLY the translated text, without quotes or any preamble.\n\n'
+    "Output ONLY the translated text, without quotes or any preamble.\n\n"
     "Question: {question}\n"
     "Translated question:"
 )
