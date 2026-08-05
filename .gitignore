@@ -54,3 +54,4 @@ example_RAG/
 openspec/
 docs/pdfs/
 TFI-UFASTA/
+data/chroma/
