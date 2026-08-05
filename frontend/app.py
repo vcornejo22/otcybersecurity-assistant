@@ -6,6 +6,8 @@ import requests
 import streamlit as st
 
 API_URL = os.getenv("API_URL", "http://localhost:8000")
+API_KEY = os.getenv("API_KEY", "")
+AUTH_HEADERS = {"Authorization": f"Bearer {API_KEY}"} if API_KEY else {}
 
 st.set_page_config(
     page_title="IEC 62443 Assistant",
@@ -24,6 +26,9 @@ with st.sidebar:
     try:
         health = requests.get(f"{API_URL}/api/health", timeout=5).json()
         st.success(f"API: {health.get('status', '?')} v{health.get('version', '?')}")
+
+        if not API_KEY:
+            st.warning("⚠️ API_KEY no configurada — las consultas fallarán con 401")
 
         if health.get("rag_loaded"):
             st.info(
@@ -60,8 +65,9 @@ with col2:
         last = st.session_state.messages[-1]
         if last["role"] == "assistant" and "sources" in last:
             for src in last["sources"]:
-                with st.expander(f"📄 {src.get('document', '?')} — {src.get('relevance', 0):.0%}"):
-                    st.caption(src.get("chunk", "")[:500])
+                title = f"📄 {src.get('filename', '?')} — pág. {src.get('page_number', '?')}"
+                with st.expander(title):
+                    st.caption(src.get("excerpt", "")[:500])
 
 # ── Input ────────────────────────────────────────────
 if prompt := st.chat_input("Tu pregunta sobre IEC 62443..."):
@@ -72,6 +78,7 @@ if prompt := st.chat_input("Tu pregunta sobre IEC 62443..."):
             resp = requests.post(
                 f"{API_URL}/api/query",
                 json={"question": prompt, "top_k": 3, "temperature": 0.3},
+                headers=AUTH_HEADERS,
                 timeout=60,
             )
             if resp.status_code == 200:

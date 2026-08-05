@@ -1,4 +1,4 @@
-# 🛡️ IEC 62443 Assistant
+# 🛡️ OT Cybersecurity Assistant
 
 Asistente conversacional RAG para el estándar IEC 62443 de ciberseguridad industrial. Consultá la norma en lenguaje natural con respuestas fundamentadas y citas a las fuentes.
 
@@ -18,6 +18,7 @@ make ingest
 # 4. Probar
 curl -X POST http://localhost:8000/api/query \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $API_KEY" \
   -d '{"question":"¿Qué es un security level en IEC 62443?"}'
 ```
 
@@ -70,6 +71,47 @@ Copiar `.env.example` a `.env`:
 | `CHROMA_HOST` | Host de ChromaDB | `localhost` |
 | `CHROMA_PORT` | Puerto de ChromaDB | `8001` |
 | `CHROMA_COLLECTION` | Colección en ChromaDB | `iec62443_docs` |
+| `API_KEY` | API key para autenticar clientes (backend y frontend) | — |
+| `JWT_SECRET` | Secreto para firmar tokens JWT | — |
+
+## 🔐 Autenticación y credenciales
+
+`/api/query` exige un header `Authorization: Bearer <token>`. Hay dos formas de obtener credenciales:
+
+### Opción 1 — API Key (la más simple)
+
+1. Definí `API_KEY` en tu `.env` (por ejemplo `API_KEY=sk-mi-clave-secreta`).
+2. Usala directamente como token:
+
+```bash
+curl -X POST http://localhost:8000/api/query \
+  -H "Authorization: Bearer sk-mi-clave-secreta" \
+  -H "Content-Type: application/json" \
+  -d '{"question":"¿Qué es un security level en IEC 62443?"}'
+```
+
+El frontend Streamlit lee la misma variable `API_KEY` del entorno (en Docker se la pasa `docker-compose.yml`), así que basta con tenerla en `.env` y hacer `make up`.
+
+### Opción 2 — Token JWT (expira a las 24 h)
+
+1. Pedile un token al endpoint de login (el `password` es tu `API_KEY`):
+
+```bash
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"user":"mi-usuario","password":"sk-mi-clave-secreta"}'
+```
+
+2. La respuesta trae el JWT; usalo como Bearer:
+
+```bash
+curl -X POST http://localhost:8000/api/query \
+  -H "Authorization: Bearer <token-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"question":"¿Qué es un security level en IEC 62443?"}'
+```
+
+> ⚠️ En producción usá un `JWT_SECRET` fuerte y aleatorio (nunca el default) y una `API_KEY` distinta por entorno.
 
 ## 🧪 Tests
 
