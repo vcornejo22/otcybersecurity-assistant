@@ -53,12 +53,13 @@ async def query(
     """Answer an IEC 62443 question using the RAG pipeline."""
     start = time.perf_counter()
     try:
-        retriever = build_retriever(settings)
+        retriever = build_retriever(settings, enable_multi_query_override=body.enable_multi_query)
         result = generate_answer(
             body.question,
             retriever,
             settings,
             temperature=body.temperature,
+            enable_thinking=body.enable_thinking,
         )
     except LLMUnavailableError:
         QUERY_COUNT.labels(status="503").inc()

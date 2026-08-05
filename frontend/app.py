@@ -19,6 +19,17 @@ st.title("🛡️ Asistente IEC 62443")
 st.markdown("Consultá la norma de ciberseguridad industrial en lenguaje natural.")
 st.divider()
 
+# ── Session state defaults ─────────────────────────
+for key in ("messages", "top_k", "temperature", "enable_multi_query", "enable_thinking"):
+    if key == "messages":
+        st.session_state.setdefault(key, [])
+    elif key == "top_k":
+        st.session_state.setdefault(key, 3)
+    elif key == "temperature":
+        st.session_state.setdefault(key, 0.3)
+    else:
+        st.session_state.setdefault(key, False)
+
 # ── Sidebar ──────────────────────────────────────────
 with st.sidebar:
     st.header("📋 Información")
@@ -39,6 +50,18 @@ with st.sidebar:
             st.warning("RAG no cargado — ejecutá `make ingest` primero")
     except Exception:
         st.error("API no disponible")
+
+    st.divider()
+    st.subheader("⚙️ Configuración")
+
+    st.slider("TOP_K_DEFAULT", 1, 10, key="top_k",
+              help="Cantidad de fragmentos relevantes a recuperar")
+    st.slider("Temperatura", 0.0, 1.0, 0.1, key="temperature",
+              help="Controla la creatividad de la respuesta (0 = preciso, 1 = creativo)")
+    st.toggle("MultiQuery (expansión de consulta con LLM)", key="enable_multi_query",
+              help="Activa una llamada extra al LLM para reescribir la pregunta en 3 variantes")
+    st.toggle("Thinking (razonamiento del modelo Qwen3)", key="enable_thinking",
+              help="Activa el razonamiento interno del modelo (más lento, puede cortar por length)")
 
     st.divider()
 
@@ -77,7 +100,13 @@ if prompt := st.chat_input("Tu pregunta sobre IEC 62443..."):
         try:
             resp = requests.post(
                 f"{API_URL}/api/query",
-                json={"question": prompt, "top_k": 3, "temperature": 0.3},
+                json={
+                    "question": prompt,
+                    "top_k": st.session_state.top_k,
+                    "temperature": st.session_state.temperature,
+                    "enable_multi_query": st.session_state.enable_multi_query,
+                    "enable_thinking": st.session_state.enable_thinking,
+                },
                 headers=AUTH_HEADERS,
                 timeout=60,
             )

@@ -39,7 +39,10 @@ def get_chroma_client(settings: Settings | None = None) -> chromadb.HttpClient:
     return _get_chroma_client(settings)
 
 
-def build_retriever(settings: Settings | None = None):
+def build_retriever(
+    settings: Settings | None = None,
+    enable_multi_query_override: bool | None = None,
+):
     """Build the configured retrieval pipeline.
 
     The pipeline consists of:
@@ -47,6 +50,11 @@ def build_retriever(settings: Settings | None = None):
         LLM-based query expansion when ``ENABLE_MULTI_QUERY`` is enabled
         (disabled by default to avoid an extra remote LLM call).
       - Optional EnsembleRetriever combining MMR and similarity search.
+
+    Args:
+        settings: Application settings.
+        enable_multi_query_override: Per-request override for the
+            ``ENABLE_MULTI_QUERY`` setting.  ``None`` = use the setting.
     """
     settings = settings or Settings()
     vectorstore = load_vectorstore(settings=settings)
@@ -61,7 +69,12 @@ def build_retriever(settings: Settings | None = None):
     )
 
     base_retriever = mmr_retriever
-    if settings.ENABLE_MULTI_QUERY:
+    effective_mq = (
+        settings.ENABLE_MULTI_QUERY
+        if enable_multi_query_override is None
+        else enable_multi_query_override
+    )
+    if effective_mq:
         llm = NanBuildersChatModel(settings=settings, temperature=0.0, max_tokens=200)
         base_retriever = MultiQueryRetriever.from_llm(
             retriever=mmr_retriever,

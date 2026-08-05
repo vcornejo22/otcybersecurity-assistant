@@ -55,6 +55,7 @@ def generate_answer(
     retriever,
     settings: Settings | None = None,
     temperature: float | None = None,
+    enable_thinking: bool | None = None,
 ) -> GenerationResult:
     """Retrieve relevant documents and generate a cited answer.
 
@@ -63,6 +64,8 @@ def generate_answer(
         retriever: A LangChain retriever (e.g. from ``build_retriever``).
         settings: Optional settings override.
         temperature: Optional generation temperature override.
+        enable_thinking: Per-request override for ``LLM_ENABLE_THINKING``.
+            ``None`` = use the setting.
 
     Returns:
         A ``GenerationResult`` containing the answer, sources, and metadata.
@@ -93,6 +96,8 @@ def generate_answer(
     llm_kwargs = {"settings": settings}
     if temperature is not None:
         llm_kwargs["temperature"] = temperature
+    if enable_thinking is not None:
+        llm_kwargs["enable_thinking"] = enable_thinking
     llm = NanBuildersChatModel(**llm_kwargs)
 
     start = time.perf_counter()

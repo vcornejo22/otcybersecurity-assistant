@@ -13,6 +13,12 @@ class QueryRequest(BaseModel):
         default=3, ge=1, le=10, description="Number of relevant fragments to retrieve"
     )
     temperature: float = Field(default=0.3, ge=0.0, le=1.0, description="Generation temperature")
+    enable_multi_query: bool | None = Field(
+        default=None, description="Override ENABLE_MULTI_QUERY for this request"
+    )
+    enable_thinking: bool | None = Field(
+        default=None, description="Override LLM_ENABLE_THINKING for this request"
+    )
 
 
 class Source(BaseModel):
