@@ -19,6 +19,11 @@ class QueryRequest(BaseModel):
     enable_thinking: bool | None = Field(
         default=None, description="Override LLM_ENABLE_THINKING for this request"
     )
+    enable_query_translation: bool | None = Field(
+        default=None,
+        description="Override ENABLE_QUERY_TRANSLATION (traduce la query al "
+        "inglés antes de buscar para mejorar recuperación en documentos bilingües)",
+    )
 
 
 class Source(BaseModel):

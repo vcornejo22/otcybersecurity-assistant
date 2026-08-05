@@ -44,13 +44,16 @@ class Settings(BaseSettings):
     CHROMA_COLLECTION: str = os.getenv("CHROMA_COLLECTION", "iec62443_docs")
 
     # Retrieval configuration
-    TOP_K_DEFAULT: int = 3
+    TOP_K_DEFAULT: int = int(os.getenv("TOP_K_DEFAULT"))
     CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "512"))
     CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "64"))
     MMR_FETCH_K: int = 20
     MMR_LAMBDA_MULT: float = 0.7
     ENABLE_HYBRID_SEARCH: bool = True
     ENABLE_MULTI_QUERY: bool = os.getenv("ENABLE_MULTI_QUERY", "false").lower() == "true"
+    ENABLE_QUERY_TRANSLATION: bool = (
+        os.getenv("ENABLE_QUERY_TRANSLATION", "false").lower() == "true"
+    )
     SIMILARITY_THRESHOLD: float = 0.70
     RETRIEVER_SEARCH_TYPE: str = "mmr"
 

@@ -8,7 +8,7 @@ from langchain_core.documents import Document
 from app.config import Settings
 from app.rag.exceptions import LLMUnavailableError
 from app.rag.llm import NanBuildersChatModel
-from app.rag.prompts import RAG_PROMPT
+from app.rag.prompts import RAG_PROMPT, TRANSLATE_QUERY_TEMPLATE
 
 
 @dataclass
@@ -56,6 +56,7 @@ def generate_answer(
     settings: Settings | None = None,
     temperature: float | None = None,
     enable_thinking: bool | None = None,
+    enable_query_translation: bool | None = None,
 ) -> GenerationResult:
     """Retrieve relevant documents and generate a cited answer.
 
@@ -66,6 +67,10 @@ def generate_answer(
         temperature: Optional generation temperature override.
         enable_thinking: Per-request override for ``LLM_ENABLE_THINKING``.
             ``None`` = use the setting.
+        enable_query_translation: Per-request override for
+            ``ENABLE_QUERY_TRANSLATION``.  When enabled, the question is
+            translated to English before retrieval (documents are in both
+            languages), and the original question is used for generation.
 
     Returns:
         A ``GenerationResult`` containing the answer, sources, and metadata.
@@ -75,7 +80,24 @@ def generate_answer(
     """
     settings = settings or Settings()
 
-    docs = retriever.invoke(question)
+    # ── Optional: translate query to English for retrieval ──────
+    retriever_question = question
+    effective_translation = (
+        settings.ENABLE_QUERY_TRANSLATION
+        if enable_query_translation is None
+        else enable_query_translation
+    )
+    if effective_translation:
+        trans_llm = NanBuildersChatModel(
+            settings=settings, max_tokens=200, temperature=0.0
+        )
+        trans_prompt = TRANSLATE_QUERY_TEMPLATE.format(question=question)
+        trans_response = trans_llm.invoke(trans_prompt)
+        translated = str(trans_response.content).strip()
+        if translated:
+            retriever_question = translated
+
+    docs = retriever.invoke(retriever_question)
 
     if not docs:
         return GenerationResult(

@@ -41,6 +41,18 @@ MULTI_QUERY_PROMPT = (
     "Generá exactamente 3 versiones alternativas, una por línea, sin numeración:"
 )
 
+TRANSLATE_QUERY_PROMPT = (
+    "You are a translation assistant for a technical document retrieval system.\n"
+    "Translate the following question into English. Many of the indexed "
+    "documents are written in English, so this English translation will be "
+    "used to search the vector database.\n"
+    "Keep technical terms and acronyms (e.g. IEC 62443, IACS, SL, OT) unchanged.\n"
+    'Output ONLY the translated text, without quotes or any preamble.\n\n'
+    "Question: {question}\n"
+    "Translated question:"
+)
+
 
 RAG_PROMPT = PromptTemplate.from_template(RAG_TEMPLATE)
 MULTI_QUERY_TEMPLATE = PromptTemplate.from_template(MULTI_QUERY_PROMPT)
+TRANSLATE_QUERY_TEMPLATE = PromptTemplate.from_template(TRANSLATE_QUERY_PROMPT)

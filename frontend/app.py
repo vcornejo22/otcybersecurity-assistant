@@ -20,7 +20,10 @@ st.markdown("Consultá la norma de ciberseguridad industrial en lenguaje natural
 st.divider()
 
 # ── Session state defaults ─────────────────────────
-for key in ("messages", "top_k", "temperature", "enable_multi_query", "enable_thinking"):
+for key in (
+    "messages", "top_k", "temperature",
+    "enable_multi_query", "enable_thinking", "enable_query_translation",
+):
     if key == "messages":
         st.session_state.setdefault(key, [])
     elif key == "top_k":
@@ -62,6 +65,9 @@ with st.sidebar:
               help="Activa una llamada extra al LLM para reescribir la pregunta en 3 variantes")
     st.toggle("Thinking (razonamiento del modelo Qwen3)", key="enable_thinking",
               help="Activa el razonamiento interno del modelo (más lento, puede cortar por length)")
+    st.toggle("Traducir query al inglés", key="enable_query_translation",
+              help="Traduce tu pregunta al inglés antes de buscar en los documentos,"
+                   " mejora recuperación en documentos bilingües")
 
     st.divider()
 
@@ -106,6 +112,7 @@ if prompt := st.chat_input("Tu pregunta sobre IEC 62443..."):
                     "temperature": st.session_state.temperature,
                     "enable_multi_query": st.session_state.enable_multi_query,
                     "enable_thinking": st.session_state.enable_thinking,
+                    "enable_query_translation": st.session_state.enable_query_translation,
                 },
                 headers=AUTH_HEADERS,
                 timeout=60,

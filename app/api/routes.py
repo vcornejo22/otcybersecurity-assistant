@@ -60,6 +60,7 @@ async def query(
             settings,
             temperature=body.temperature,
             enable_thinking=body.enable_thinking,
+            enable_query_translation=body.enable_query_translation,
         )
     except LLMUnavailableError:
         QUERY_COUNT.labels(status="503").inc()
