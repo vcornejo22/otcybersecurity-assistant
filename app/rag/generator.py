@@ -7,7 +7,7 @@ from langchain_core.documents import Document
 
 from app.config import Settings
 from app.rag.exceptions import LLMUnavailableError
-from app.rag.llm import NanBuildersChatModel
+from app.rag.llm import OpenAICompatibleChatModel
 from app.rag.prompts import RAG_PROMPT, TRANSLATE_QUERY_TEMPLATE
 
 
@@ -88,7 +88,7 @@ def generate_answer(
         else enable_query_translation
     )
     if effective_translation:
-        trans_llm = NanBuildersChatModel(
+        trans_llm = OpenAICompatibleChatModel(
             settings=settings, max_tokens=200, temperature=0.0
         )
         trans_prompt = TRANSLATE_QUERY_TEMPLATE.format(question=question)
@@ -120,7 +120,7 @@ def generate_answer(
         llm_kwargs["temperature"] = temperature
     if enable_thinking is not None:
         llm_kwargs["enable_thinking"] = enable_thinking
-    llm = NanBuildersChatModel(**llm_kwargs)
+    llm = OpenAICompatibleChatModel(**llm_kwargs)
 
     start = time.perf_counter()
     try:
@@ -129,7 +129,7 @@ def generate_answer(
         raise
     except Exception as exc:
         raise LLMUnavailableError(
-            f"Unexpected error while calling Nan Builders LLM: {exc}"
+            f"Unexpected error while calling the LLM: {exc}"
         ) from exc
     latency_ms = (time.perf_counter() - start) * 1000
 

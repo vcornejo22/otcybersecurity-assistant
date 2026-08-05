@@ -6,7 +6,7 @@ class RAGError(Exception):
 
 
 class LLMUnavailableError(RAGError):
-    """Raised when the Nan Builders LLM API is unreachable or returns an error."""
+    """Raised when the OpenAI-compatible LLM API is unreachable or returns an error."""
 
 
 class IngestionError(RAGError):

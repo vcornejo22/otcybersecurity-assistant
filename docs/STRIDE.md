@@ -3,7 +3,7 @@
 ## Arquitectura objetivo
 
 ```
-Cliente ──HTTPS──▶ FastAPI ──httpx──▶ Nan Builders API
+Cliente ──HTTPS──▶ FastAPI ──httpx──▶ LLM API (OpenAI-compatible)
                       │                    (embeddings + LLM)
                       ├──▶ ChromaDB
                       └──▶ Prometheus metrics
@@ -28,7 +28,7 @@ Superficie de ataque: API HTTP (puerto 8000), ChromaDB HTTP (puerto 8001), Strea
 |---------|-----------|------------|
 | Modificación de consultas en tránsito | Media | HTTPS. CSP headers (`Content-Security-Policy`) |
 | Inyección de prompts maliciosos | Media | `max_length=500` en `QueryRequest`. `field_validator` sanitiza input |
-| Manipulación de respuestas del LLM | Baja | TLS en conexión a Nan Builders API |
+| Manipulación de respuestas del LLM | Baja | TLS en conexión a la API del LLM |
 
 ## R — Repudiation (Repudio)
 
@@ -52,7 +52,7 @@ Superficie de ataque: API HTTP (puerto 8000), ChromaDB HTTP (puerto 8001), Strea
 | Amenaza | Severidad | Mitigación |
 |---------|-----------|------------|
 | Flood de consultas al endpoint | Alta | Rate limiting: 30 req/min por IP (`slowapi`). Header `Retry-After` en respuesta 429 |
-| Consultas que agotan tokens del LLM | Media | `max_length=500` en input. Timeout de 60 s en httpx hacia Nan Builders |
+| Consultas que agotan tokens del LLM | Media | `max_length=500` en input. Timeout de 60 s en httpx hacia el LLM |
 | PDFs maliciosos en ingesta | Baja | `pymupdf.FileDataError` capturado. `IngestionError` en input inválido |
 | Ataque de fuerza bruta al login | Media | Rate limiting aplica a `/api/auth/login` (mismo límite global) |
 

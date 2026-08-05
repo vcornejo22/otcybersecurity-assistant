@@ -9,7 +9,7 @@ Follows the pattern from example_RAG/5_vector_stores.py:
     - Loads all PDFs from a directory using PyPDFDirectoryLoader
     - Splits with RecursiveCharacterTextSplitter
     - Deletes + recreates collection for clean reload
-    - Generates qwen3-embedding embeddings via Nan Builders API
+    - Generates embeddings via an OpenAI-compatible API
     - Verifies collection after insert
 
 Requirements:
@@ -43,7 +43,7 @@ CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", ""))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", ""))
 PDF_DIR = os.getenv("PDF_DIR", "docs/pdfs")
 
-# ── Embeddings (Nan Builders API via OpenAI-compatible interface) ─
+# ── Embeddings (OpenAI-compatible API, ej: qwen3, text-embedding-3, etc.) ─
 llm_embe = OpenAIEmbeddings(
     model=LLM_MODEL_EMBEDDING,
     base_url=LLM_BASE_URL,

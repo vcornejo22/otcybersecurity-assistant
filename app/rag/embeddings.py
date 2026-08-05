@@ -1,4 +1,4 @@
-"""Nan Builders embedding wrapper for LangChain."""
+"""OpenAI-compatible embedding wrapper for LangChain."""
 
 import httpx
 from langchain_core.embeddings import Embeddings
@@ -7,14 +7,14 @@ from app.config import Settings
 from app.rag.exceptions import RAGError
 
 
-class NanBuildingsEmbeddings(Embeddings):
-    """LangChain-compatible embedding client for the Nan Builders API.
+class OpenAICompatibleEmbeddings(Embeddings):
+    """LangChain-compatible embedding client for any OpenAI-compatible API.
 
     Calls ``POST /v1/embeddings`` with the configured embedding model
     and returns the embedding vectors. The API key and base URL are read
     from the application settings.
 
-    Respects Nan Builders batch limit of 32 texts per request.
+    Respects the API batch limit of 32 texts per request.
     """
 
     _BATCH_SIZE = 32

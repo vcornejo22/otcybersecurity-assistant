@@ -1,4 +1,4 @@
-"""Nan Builders chat model wrapper for LangChain."""
+"""OpenAI-compatible chat model wrapper for LangChain."""
 
 import json
 from typing import Any
@@ -18,8 +18,8 @@ from app.config import Settings
 from app.rag.exceptions import LLMUnavailableError
 
 
-class NanBuildersChatModel(BaseChatModel):
-    """LangChain-compatible chat model for the Nan Builders API.
+class OpenAICompatibleChatModel(BaseChatModel):
+    """LangChain-compatible chat model for any OpenAI-compatible API.
 
     Calls ``POST /v1/chat/completions`` with configurable model and
     temperature. The API key and base URL are read from the application
@@ -57,7 +57,7 @@ class NanBuildersChatModel(BaseChatModel):
 
     @property
     def _llm_type(self) -> str:
-        return "nan-builders"
+        return "openai-compatible"
 
     @property
     def _identifying_params(self) -> dict[str, Any]:
@@ -96,11 +96,13 @@ class NanBuildersChatModel(BaseChatModel):
             )
             response.raise_for_status()
         except (httpx.TimeoutException, httpx.ConnectError) as exc:
-            raise LLMUnavailableError("Nan Builders LLM API is unreachable or timed out") from exc
+            raise LLMUnavailableError(
+                "OpenAI-compatible LLM API is unreachable or timed out"
+            ) from exc
         except httpx.HTTPStatusError as exc:
             if exc.response.status_code >= 500:
                 raise LLMUnavailableError(
-                    f"Nan Builders LLM API returned {exc.response.status_code}"
+                    f"OpenAI-compatible LLM API returned {exc.response.status_code}"
                 ) from exc
             raise
 
@@ -154,7 +156,7 @@ class NanBuildersChatModel(BaseChatModel):
 
 
 def _convert_message(message: BaseMessage) -> dict[str, str]:
-    """Map a LangChain message to the Nan Builders API message format."""
+    """Map a LangChain message to the OpenAI-compatible API message format."""
     if isinstance(message, SystemMessage):
         role = "system"
     elif isinstance(message, HumanMessage):

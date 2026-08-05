@@ -7,7 +7,7 @@ Asistente conversacional RAG para el estándar IEC 62443 de ciberseguridad indus
 ```bash
 # 1. Clonar y configurar
 cp .env.example .env
-# Editar .env con tu LLM_API_KEY de Nan Builders
+# Editar .env con tu LLM_API_KEY del proveedor
 
 # 2. Levantar servicios
 make up
@@ -44,7 +44,7 @@ API docs: http://localhost:8000/docs
 ## 🏗️ Arquitectura
 
 ```
-Usuario → Streamlit (8501) → FastAPI (8000) → ChromaDB (8001) → Nan Builders API
+Usuario → Streamlit (8501) → FastAPI (8000) → ChromaDB (8001) → LLM API (OpenAI-compatible)
                                     ↓
                               RAG Pipeline
                          (ingest → retrieve → generate)
@@ -53,7 +53,7 @@ Usuario → Streamlit (8501) → FastAPI (8000) → ChromaDB (8001) → Nan Buil
 - **FastAPI**: API REST con endpoints `/api/health` y `/api/query`
 - **ChromaDB**: Vector store HTTP (chromadb/chroma)
 - **Streamlit**: Frontend de chat
-- **Nan Builders API**: Embeddings (`qwen3-embedding`, 4096 dims) + LLM (`qwen3.7-max`)
+- **LLM API (OpenAI-compatible)**: Embeddings (ej: `qwen3-embedding`) + LLM (ej: `qwen3.6`)
 - **LangChain**: Orquestación del retrieval (MMR + Ensemble; MultiQuery opcional vía `ENABLE_MULTI_QUERY`)
 
 ## ⚙️ Configuración
@@ -62,8 +62,8 @@ Copiar `.env.example` a `.env`:
 
 | Variable | Descripción | Default |
 |----------|-------------|---------|
-| `LLM_API_KEY` | API key de Nan Builders | — |
-| `LLM_BASE_URL` | URL base de Nan Builders | `https://api.nan.builders/v1` |
+| `LLM_API_KEY` | API key del proveedor LLM (OpenAI-compatible) | — |
+| `LLM_BASE_URL` | URL base del proveedor LLM | `https://api.openai.com/v1` |
 | `LLM_MODEL` | Modelo de generación | `qwen3.7-max` |
 | `LLM_MODEL_EMBEDDING` | Modelo de embeddings | `qwen3-embedding` |
 | `LLM_MAX_TOKENS` | Tope de tokens de la respuesta | `1024` |

@@ -22,7 +22,7 @@ class Settings(BaseSettings):
         "APP_CORS_ORIGINS", "http://localhost:3000,http://localhost:8000"
     )
 
-    # Nan Builders API
+    # LLM API (OpenAI-compatible: OpenAI, Qwen, etc.)
     LLM_API_KEY: str = os.getenv("LLM_API_KEY", "")
     LLM_BASE_URL: str = os.getenv("LLM_BASE_URL", "")
 

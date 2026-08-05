@@ -70,7 +70,7 @@ async def _validation_error_handler(request: Request, exc: RequestValidationErro
 
 @app.exception_handler(LLMUnavailableError)
 async def _llm_unavailable_handler(request: Request, exc: LLMUnavailableError) -> JSONResponse:
-    """Return a 503 response when the Nan Builders LLM is unavailable."""
+    """Return a 503 response when the LLM is unavailable."""
     body = ErrorResponse(error={"code": "llm_unavailable", "message": str(exc)})
     return JSONResponse(status_code=503, content=body.model_dump())
 

@@ -4,15 +4,15 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-from app.rag.embeddings import NanBuildingsEmbeddings
+from app.rag.embeddings import OpenAICompatibleEmbeddings
 from app.rag.exceptions import LLMUnavailableError
 from app.rag.generator import GenerationResult, generate_answer
-from app.rag.llm import NanBuildersChatModel
+from app.rag.llm import OpenAICompatibleChatModel
 from app.rag.retrieval import build_retriever
 
 
-class TestNanBuildingsEmbeddings:
-    """Tests for the Nan Builders embedding wrapper."""
+class TestOpenAICompatibleEmbeddings:
+    """Tests for the OpenAI-compatible embedding wrapper."""
 
     def test_embed_query_returns_1024_dim_vector(self):
         """A successful embeddings call returns a 1024-dimension vector."""
@@ -27,7 +27,7 @@ class TestNanBuildingsEmbeddings:
             mock_response.raise_for_status.return_value = None
             mock_post.return_value = mock_response
 
-            embeddings = NanBuildingsEmbeddings(
+            embeddings = OpenAICompatibleEmbeddings(
                 settings=Mock(
                     LLM_API_KEY="test",
                     LLM_BASE_URL="http://test",
@@ -44,7 +44,7 @@ class TestNanBuildingsEmbeddings:
         from app.rag.exceptions import RAGError
 
         with pytest.raises(RAGError):
-            NanBuildingsEmbeddings(settings=Mock(LLM_API_KEY="", LLM_BASE_URL="http://test"))
+            OpenAICompatibleEmbeddings(settings=Mock(LLM_API_KEY="", LLM_BASE_URL="http://test"))
 
 
 class TestBuildRetriever:
@@ -123,7 +123,7 @@ class TestGenerateAnswer:
         llm_response.content = "It is a series of cybersecurity standards."
         llm_response.response_metadata = {"tokens_used": 42}
 
-        with patch("app.rag.generator.NanBuildersChatModel") as mock_llm_cls:
+        with patch("app.rag.generator.OpenAICompatibleChatModel") as mock_llm_cls:
             mock_llm_cls.return_value.invoke.return_value = llm_response
             result = generate_answer(
                 "What is IEC 62443?",
@@ -162,7 +162,7 @@ class TestGenerateAnswer:
             )
         ]
 
-        with patch("app.rag.generator.NanBuildersChatModel") as mock_llm_cls:
+        with patch("app.rag.generator.OpenAICompatibleChatModel") as mock_llm_cls:
             mock_llm_cls.return_value.invoke.side_effect = LLMUnavailableError("API down")
             with pytest.raises(LLMUnavailableError):
                 generate_answer(
@@ -172,7 +172,7 @@ class TestGenerateAnswer:
                 )
 
 
-class TestNanBuildersChatModel:
+class TestOpenAICompatibleChatModel:
     """Tests for the LLM wrapper."""
 
     def test_raises_on_missing_api_key(self):
@@ -180,4 +180,4 @@ class TestNanBuildersChatModel:
         from app.config import Settings
 
         with pytest.raises(LLMUnavailableError):
-            NanBuildersChatModel(settings=Settings(LLM_API_KEY="", LLM_BASE_URL="http://test"))
+            OpenAICompatibleChatModel(settings=Settings(LLM_API_KEY="", LLM_BASE_URL="http://test"))

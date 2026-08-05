@@ -7,8 +7,8 @@ from langchain_classic.retrievers import EnsembleRetriever
 from langchain_classic.retrievers.multi_query import MultiQueryRetriever
 
 from app.config import Settings
-from app.rag.embeddings import NanBuildingsEmbeddings
-from app.rag.llm import NanBuildersChatModel
+from app.rag.embeddings import OpenAICompatibleEmbeddings
+from app.rag.llm import OpenAICompatibleChatModel
 from app.rag.prompts import MULTI_QUERY_TEMPLATE
 
 
@@ -24,7 +24,7 @@ def _get_chroma_client(settings: Settings) -> chromadb.HttpClient:
 def load_vectorstore(settings: Settings | None = None) -> Chroma:
     """Load the configured ChromaDB collection from the HTTP server."""
     settings = settings or Settings()
-    embeddings = NanBuildingsEmbeddings(settings=settings)
+    embeddings = OpenAICompatibleEmbeddings(settings=settings)
     client = _get_chroma_client(settings)
     return Chroma(
         client=client,
@@ -75,7 +75,7 @@ def build_retriever(
         else enable_multi_query_override
     )
     if effective_mq:
-        llm = NanBuildersChatModel(settings=settings, temperature=0.0, max_tokens=200)
+        llm = OpenAICompatibleChatModel(settings=settings, temperature=0.0, max_tokens=200)
         base_retriever = MultiQueryRetriever.from_llm(
             retriever=mmr_retriever,
             llm=llm,

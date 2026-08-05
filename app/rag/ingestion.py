@@ -29,7 +29,7 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.config import Settings, get_settings
-from app.rag.embeddings import NanBuildingsEmbeddings
+from app.rag.embeddings import OpenAICompatibleEmbeddings
 from app.rag.exceptions import IngestionError
 
 
@@ -125,7 +125,7 @@ def ingest_pdfs(
 
     # Generate embeddings and store
     print(f"Generating embeddings and storing in '{collection_name}'...")
-    embeddings = NanBuildingsEmbeddings(settings=settings)
+    embeddings = OpenAICompatibleEmbeddings(settings=settings)
 
     Chroma.from_documents(
         documents=chunks,
