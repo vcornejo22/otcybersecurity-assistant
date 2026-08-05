@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     CHROMA_COLLECTION: str = os.getenv("CHROMA_COLLECTION", "iec62443_docs")
 
     # Retrieval configuration
-    TOP_K_DEFAULT: int = int(os.getenv("TOP_K_DEFAULT"))
+    TOP_K_DEFAULT: int = int(os.getenv("TOP_K_DEFAULT", "3"))
     CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "512"))
     CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "64"))
     MMR_FETCH_K: int = 20
