@@ -1,4 +1,4 @@
-"""Answer generation for the IEC 62443 RAG pipeline."""
+"""Answer generation for the industrial cybersecurity (OT/ICS) RAG pipeline."""
 
 import time
 from dataclasses import dataclass
@@ -102,7 +102,7 @@ def generate_answer(
     if not docs:
         return GenerationResult(
             answer=(
-                "No se encontraron documentos relevantes de IEC 62443 "
+                "No se encontraron documentos relevantes de ciberseguridad industrial "
                 "para responder esta pregunta. "
                 "Intentá reformular la consulta o ingerí documentos adicionales."
             ),

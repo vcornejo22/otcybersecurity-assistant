@@ -1,5 +1,5 @@
 """
-Standalone PDF ingestion script for IEC 62443 ChromaDB vector store.
+Standalone PDF ingestion script for the industrial cybersecurity (OT/ICS) ChromaDB vector store.
 
 Usage:
     python scripts/ingest.py
@@ -62,7 +62,7 @@ chroma_client = chromadb.HttpClient(
 pdf_dir = Path(PDF_DIR)
 if not pdf_dir.is_dir():
     print(f"Error: PDF directory not found: {pdf_dir}")
-    print("Place your IEC 62443 PDFs in docs/pdfs/ or set PDF_DIR in .env")
+    print("Place your industrial cybersecurity PDFs in docs/pdfs/ or set PDF_DIR in .env")
     exit(1)
 
 loader = PyPDFDirectoryLoader(str(pdf_dir))
@@ -113,7 +113,7 @@ for c in server_cols:
         print(f"\n✓ {c.count()} chunks persisted in ChromaDB (collection '{c.name}')")
 
 # ── Quick test query ─────────────────────────────────────────────
-question = "What are the security levels defined in IEC 62443?"
+question = "What are the security levels defined in industrial cybersecurity standards?"
 print("\n--- Test query ---")
 print(f"Q: {question}")
 

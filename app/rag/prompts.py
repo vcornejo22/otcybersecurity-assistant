@@ -1,10 +1,11 @@
-"""Prompt templates for the IEC 62443 RAG pipeline."""
+"""Prompt templates for the industrial cybersecurity (OT/ICS) RAG pipeline."""
 
 from langchain_core.prompts import PromptTemplate
 
 RAG_TEMPLATE = (
-    "Eres un asistente experto en la serie de estándares IEC 62443 de ciberseguridad\n"
-    "para sistemas de automatización y control industrial (IACS).\n"
+    "Eres un asistente experto en ciberseguridad industrial (OT/ICS),\n"
+    "incluyendo estándares como IEC 62443, NIST SP 800-82,\n"
+    "guías sectoriales y mejores prácticas de la industria.\n"
     "Responde la pregunta del usuario utilizando ÚNICAMENTE la información\n"
     "proporcionada en los siguientes fragmentos de documentos.\n"
     "\n"
@@ -25,15 +26,15 @@ RAG_TEMPLATE = (
 )
 
 MULTI_QUERY_PROMPT = (
-    "Eres un experto en estándares de ciberseguridad industrial (IEC 62443).\n"
+    "Eres un experto en ciberseguridad industrial (OT/ICS),\n"
+    "incluyendo estándares como IEC 62443, NIST SP 800-82,\n"
+    "arquitecturas de referencia y guías sectoriales.\n"
     "Generá múltiples versiones de la pregunta del usuario para recuperar\n"
     "documentos relevantes de una base de datos vectorial.\n"
     "\n"
     "Al generar variaciones, considerá:\n"
-    '- Sinónimos y términos técnicos (ej: "nivel de seguridad", "SL").\n'
-    '- Diferentes roles (ej: "operador", "asset owner", "proveedor").\n'
-    '- Abreviaturas IEC 62443 (ej: "IACS").\n'
-    "- Formulaciones alternativas del mismo concepto.\n"
+    '- Sinónimos y términos técnicos (ej: "nivel de seguridad", "SL", "security level", "zone").\n'
+    '- Diferentes roles (ej: "operador", "asset owner", "proveedor", "integrator").\n'
     "- Términos en español e inglés (los documentos están en ambos idiomas).\n"
     "\n"
     "Consulta original: {question}\n"
@@ -46,7 +47,8 @@ TRANSLATE_QUERY_PROMPT = (
     "Translate the following question into English. Many of the indexed "
     "documents are written in English, so this English translation will be "
     "used to search the vector database.\n"
-    "Keep technical terms and acronyms (e.g. IEC 62443, IACS, SL, OT) unchanged.\n"
+    "Keep technical terms, acronyms, and proper names unchanged (e.g.\n"
+    "IEC 62443, NIST SP 800-82, OT, ICS, IACS, SCADA, PLC, DCS, SL, zone, conduit).\n"
     'Output ONLY the translated text, without quotes or any preamble.\n\n'
     "Question: {question}\n"
     "Translated question:"

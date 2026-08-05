@@ -1,4 +1,4 @@
-"""Retriever factory for the IEC 62443 RAG pipeline."""
+"""Retriever factory for the industrial cybersecurity (OT/ICS) RAG pipeline."""
 
 import chromadb
 from chromadb.config import Settings as ChromaSettings

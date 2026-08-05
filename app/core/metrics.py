@@ -1,4 +1,4 @@
-"""Prometheus metrics for the IEC 62443 Assistant."""
+"""Prometheus metrics for the OT Cybersecurity Assistant."""
 
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse

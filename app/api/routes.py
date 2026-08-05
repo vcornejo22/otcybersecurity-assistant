@@ -50,7 +50,7 @@ async def query(
     settings: Settings = Depends(get_settings),
     user: str = Depends(verify_credentials),
 ) -> QueryResponse:
-    """Answer an IEC 62443 question using the RAG pipeline."""
+    """Answer an industrial cybersecurity (OT/ICS) question using the RAG pipeline."""
     start = time.perf_counter()
     try:
         retriever = build_retriever(settings, enable_multi_query_override=body.enable_multi_query)

@@ -1,4 +1,4 @@
-"""PDF ingestion for the IEC 62443 RAG pipeline.
+"""PDF ingestion for the industrial cybersecurity (OT/ICS) RAG pipeline.
 
 Usage:
     # Single PDF
@@ -145,7 +145,7 @@ def ingest_pdfs(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Ingest IEC 62443 PDFs into ChromaDB (HTTP server mode)."
+        description="Ingest OT/ICS cybersecurity PDFs into ChromaDB (HTTP server mode)."
     )
     parser.add_argument(
         "pdf",

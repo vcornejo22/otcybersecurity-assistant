@@ -1,4 +1,4 @@
-"""API request/response schemas for the IEC 62443 RAG pipeline."""
+"""API request/response schemas for the OT/ICS RAG pipeline."""
 
 from pydantic import BaseModel, Field
 
@@ -7,7 +7,8 @@ class QueryRequest(BaseModel):
     """Request body for POST /api/query."""
 
     question: str = Field(
-        ..., min_length=5, max_length=500, description="User question about IEC 62443"
+        ..., min_length=5, max_length=500,
+        description="User question about industrial cybersecurity",
     )
     top_k: int = Field(
         default=3, ge=1, le=10, description="Number of relevant fragments to retrieve"

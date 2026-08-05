@@ -1,4 +1,4 @@
-"""IEC 62443 Assistant — Streamlit Frontend."""
+"""OT Cybersecurity Assistant — Streamlit Frontend."""
 
 import os
 
@@ -10,13 +10,13 @@ API_KEY = os.getenv("API_KEY", "")
 AUTH_HEADERS = {"Authorization": f"Bearer {API_KEY}"} if API_KEY else {}
 
 st.set_page_config(
-    page_title="IEC 62443 Assistant",
+    page_title="OT Cybersecurity Assistant",
     page_icon="🛡️",
     layout="wide",
 )
 
-st.title("🛡️ Asistente IEC 62443")
-st.markdown("Consultá la norma de ciberseguridad industrial en lenguaje natural.")
+st.title("🛡️ Asistente de Ciberseguridad Industrial")
+st.markdown("Consultá normativas de ciberseguridad industrial (OT/ICS) en lenguaje natural.")
 st.divider()
 
 # ── Session state defaults ─────────────────────────
@@ -99,7 +99,7 @@ with col2:
                     st.caption(src.get("excerpt", "")[:500])
 
 # ── Input ────────────────────────────────────────────
-if prompt := st.chat_input("Tu pregunta sobre IEC 62443..."):
+if prompt := st.chat_input("Tu pregunta sobre ciberseguridad industrial..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     with st.spinner("🔍 Consultando..."):
@@ -148,6 +148,8 @@ if prompt := st.chat_input("Tu pregunta sobre IEC 62443..."):
 
 st.divider()
 st.markdown(
-    "<div style='text-align: center; color: #666;'>🛡️ IEC 62443 Assistant — TFI UFASTA</div>",
+    "<div style='text-align: center; color: #666;'>"
+    "🛡️ Asistente de Ciberseguridad Industrial — TFI UFASTA"
+    "</div>",
     unsafe_allow_html=True,
 )
