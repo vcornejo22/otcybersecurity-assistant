@@ -52,7 +52,7 @@ class Settings(BaseSettings):
     ENABLE_HYBRID_SEARCH: bool = True
     ENABLE_MULTI_QUERY: bool = os.getenv("ENABLE_MULTI_QUERY", "false").lower() == "true"
     ENABLE_QUERY_TRANSLATION: bool = (
-        os.getenv("ENABLE_QUERY_TRANSLATION", "false").lower() == "true"
+        os.getenv("ENABLE_QUERY_TRANSLATION", "true").lower() == "true"
     )
     SIMILARITY_THRESHOLD: float = 0.70
     RETRIEVER_SEARCH_TYPE: str = "mmr"

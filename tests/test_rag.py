@@ -142,11 +142,13 @@ class TestGenerateAnswer:
         retriever = Mock()
         retriever.invoke.return_value = []
 
-        result = generate_answer(
-            "What is IEC 62443?",
-            retriever,
-            test_settings,
-        )
+        with patch("app.rag.generator.OpenAICompatibleChatModel") as mock_llm_cls:
+            mock_llm_cls.return_value.invoke.return_value = Mock(content="translated query")
+            result = generate_answer(
+                "What is IEC 62443?",
+                retriever,
+                test_settings,
+            )
 
         assert "No se encontraron documentos relevantes" in result.answer
         assert result.sources == []
